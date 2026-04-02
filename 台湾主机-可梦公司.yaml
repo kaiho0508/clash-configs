@@ -1,0 +1,45 @@
+proxies:
+  - name: "tw-可梦公司"
+    type: vmess
+    server: "cn.feibi.site"
+    port: 12599
+    uuid: "69533e21-bde2-481e-d114-10a24d14f0c2"
+    alterId: 0
+    cipher: auto
+    udp: true
+    network: ws
+    tls: true
+    ws-opts:
+      path: "/apilist"
+
+proxy-groups:
+  - name: "Proxy"
+    type: select
+    proxies:
+      - "tw-可梦公司"
+      - DIRECT
+
+rules:
+  # 强制以下域名通过代理（可以添加多个）
+  - DOMAIN-SUFFIX,bing.com,Proxy    # 访问 bing.com 走代理
+  - DOMAIN-SUFFIX,google.com,Proxy  # 访问 google.com 走代理
+  - DOMAIN-SUFFIX,facebook.com,Proxy # 访问 facebook.com 走代理
+
+  # 强制以下域名直连（不走代理）
+  - DOMAIN-SUFFIX,example.cn,DIRECT  # example.cn 直连，不通过代理
+  - DOMAIN-SUFFIX,taobao.com,DIRECT  # taobao.com 直连
+  - DOMAIN-SUFFIX,wechat.com,DIRECT  # wechat.com 直连
+
+  # 强制特定 IP 范围通过代理
+  - IP-CIDR,8.8.8.8/32,Proxy   # 8.8.8.8 走代理（例如 Google DNS）
+  - IP-CIDR,1.1.1.1/32,Proxy   # 1.1.1.1 走代理（例如 Cloudflare DNS）
+
+  # 强制特定 IP 范围直连（不走代理）
+  - IP-CIDR,192.168.0.0/16,DIRECT  # 局域网 IP 直连
+  - IP-CIDR,114.114.114.114/32,DIRECT  # 114.114.114.114 直连（例如中国公共 DNS）
+
+  # 将中国大陆 IP 的流量直连，不通过代理
+  - GEOIP,CN,DIRECT
+
+  # 将所有其他流量通过代理（默认规则）
+  - MATCH,Proxy
